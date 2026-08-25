@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <title>kontekst</title>
+  <%- include('partials-head') %>
+</head>
+<body>
+  <header class="site-header">
+    <h1>kontekst</h1>
+    <p class="tagline">Bloggposter og apper</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Bloggposter</h2>
+      <% if (posts.length === 0) { %>
+        <p class="empty">Ingen bloggposter enda.</p>
+      <% } %>
+      <ul class="post-list">
+        <% posts.forEach(function(post) { %>
+          <li class="post-card">
+            <a href="/post/<%= post.slug %>">
+              <h3><%= post.title %></h3>
+              <% if (post.summary) { %><p><%= post.summary %></p><% } %>
+              <time><%= post.created_at %></time>
+            </a>
+          </li>
+        <% }); %>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Apper og lenker</h2>
+      <% if (links.length === 0) { %>
+        <p class="empty">Ingen lenker enda.</p>
+      <% } %>
+      <ul class="link-list">
+        <% links.forEach(function(link) { %>
+          <li class="link-card">
+            <a href="<%= link.url %>" target="_blank" rel="noopener noreferrer">
+              <h3><%= link.title %></h3>
+              <% if (link.description) { %><p><%= link.description %></p><% } %>
+            </a>
+          </li>
+        <% }); %>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>kontekst.skydotten.no</p>
+  </footer>
+</body>
+</html>

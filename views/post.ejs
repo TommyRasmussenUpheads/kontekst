@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <title><%= post.title %> — kontekst</title>
+  <%- include('partials-head') %>
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="back-link">&larr; kontekst</a>
+  </header>
+
+  <main>
+    <article class="post">
+      <h1><%= post.title %></h1>
+      <time><%= post.created_at %></time>
+      <div class="post-content"><%- post.content %></div>
+    </article>
+  </main>
+
+  <footer>
+    <p>kontekst.skydotten.no</p>
+  </footer>
+</body>
+</html>

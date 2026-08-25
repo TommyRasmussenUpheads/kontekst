@@ -1,0 +1,23 @@
+services:
+  kontekst:
+    build: .
+    container_name: kontekst
+    ports:
+      - "3016:3016"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      default: {}
+      npm:
+        ipv4_address: 172.18.0.9
+      mgmtnet: {}
+
+networks:
+  npm:
+    external: true
+    name: nginx-proxy-manager_default
+  mgmtnet:
+    external: true
+    name: skydotten-mgmt-net
