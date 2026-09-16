@@ -2,53 +2,116 @@
 <html lang="no">
 <head>
   <title>kontekst</title>
+  <meta name="description" content="Personlig lab for AI-eksperimenter: proof of concepts, apper og bloggposter om å bygge med kontekst.">
   <%- include('partials-head') %>
 </head>
 <body>
   <header class="site-header">
-    <h1>kontekst</h1>
-    <p class="tagline">Bloggposter og apper</p>
+    <a class="wordmark" href="/">kontekst<span>.skydotten.no</span></a>
+    <nav class="site-nav">
+      <a href="#apper">Apper</a>
+      <a href="#blogg">Blogg</a>
+      <a href="#om">Om</a>
+    </nav>
   </header>
 
   <main>
-    <section>
-      <h2>Bloggposter</h2>
-      <% if (posts.length === 0) { %>
-        <p class="empty">Ingen bloggposter enda.</p>
-      <% } %>
-      <ul class="post-list">
-        <% posts.forEach(function(post) { %>
-          <li class="post-card">
-            <a href="/post/<%= post.slug %>">
-              <h3><%= post.title %></h3>
-              <% if (post.summary) { %><p><%= post.summary %></p><% } %>
-              <time><%= post.created_at %></time>
+    <section class="hero">
+      <div>
+        <p class="kicker">Personlig lab &middot; AI &amp; kontekst</p>
+        <h1>Modeller er smarte.<br><em>Kontekst</em> gjør dem nyttige.</h1>
+        <p class="lede">Her samler jeg proof of concepts, eksperimenter og skriverier om å bygge med AI — og om det som avgjør resultatet: hva modellen faktisk vet om oppgaven din.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#apper">Se prosjektene</a>
+          <a class="btn btn-ghost" href="#om">Hvem står bak</a>
+        </div>
+      </div>
+      <div class="ctx-panel">
+        <div class="ctx-head">
+          <span>context_window</span>
+          <span>74% fylt</span>
+        </div>
+        <div class="ctx-grid">
+          <% for (var i = 0; i < 60; i++) { %><i class="<%= i < 44 ? (i % 7 === 0 ? 'hi' : 'on') : '' %>"></i><% } %>
+        </div>
+        <p class="ctx-note">// jo mer relevant kontekst,<br>// jo mindre gjetting</p>
+      </div>
+    </section>
+
+    <section id="apper">
+      <div class="section-head">
+        <h2>Apper og lenker</h2>
+        <span class="num">01</span>
+      </div>
+      <ul class="card-grid">
+        <% links.forEach(function(link) { %>
+          <li>
+            <a href="<%= link.url %>" target="_blank" rel="noopener noreferrer">
+              <div class="card-top">
+                <span class="tag">Prosjekt</span>
+                <span class="arrow">&#8599;</span>
+              </div>
+              <h3><%= link.title %></h3>
+              <% if (link.description) { %><p><%= link.description %></p><% } %>
+              <span class="host"><%= link.url.replace(/^https?:\/\//, '').replace(/\/$/, '') %></span>
             </a>
           </li>
         <% }); %>
+        <li class="plain card-next">
+          <span class="label">Neste</span>
+          <p>Nye proof of concepts lander her etter hvert som de blir ferdige.</p>
+        </li>
       </ul>
     </section>
 
-    <section>
-      <h2>Apper og lenker</h2>
-      <% if (links.length === 0) { %>
-        <p class="empty">Ingen lenker enda.</p>
+    <section id="blogg">
+      <div class="section-head">
+        <h2>Bloggposter</h2>
+        <span class="num">02</span>
+      </div>
+      <% if (posts.length === 0) { %>
+        <div class="empty-state">
+          <p class="big">Ingen bloggposter enda</p>
+          <p>Første post er under arbeid: hva jeg har lært om å gi AI-agenter nok kontekst til å gjøre noe fornuftig.</p>
+        </div>
+      <% } else { %>
+        <ul class="card-grid">
+          <% posts.forEach(function(post) { %>
+            <li>
+              <a href="/post/<%= post.slug %>">
+                <div class="card-top">
+                  <span class="tag">Blogg</span>
+                  <span class="arrow">&rarr;</span>
+                </div>
+                <h3><%= post.title %></h3>
+                <% if (post.summary) { %><p><%= post.summary %></p><% } %>
+                <time><%= post.created_at %></time>
+              </a>
+            </li>
+          <% }); %>
+        </ul>
       <% } %>
-      <ul class="link-list">
-        <% links.forEach(function(link) { %>
-          <li class="link-card">
-            <a href="<%= link.url %>" target="_blank" rel="noopener noreferrer">
-              <h3><%= link.title %></h3>
-              <% if (link.description) { %><p><%= link.description %></p><% } %>
-            </a>
-          </li>
-        <% }); %>
-      </ul>
+    </section>
+
+    <section id="om" class="about">
+      <div>
+        <div class="section-head">
+          <h2>Om siden</h2>
+          <span class="num">03</span>
+        </div>
+        <p>Et privat verksted for AI-eksperimenter. Alt som ligger her er bygget for å lære noe — ikke for å selge noe. Kjører på egen server.</p>
+      </div>
+      <div class="facts">
+        <div><span>Tema</span><span>AI &middot; kontekst</span></div>
+        <div><span>Innhold</span><span>PoC &middot; blogg</span></div>
+        <div><span>Drift</span><span>self-hosted</span></div>
+      </div>
     </section>
   </main>
 
   <footer>
     <p>kontekst.skydotten.no</p>
+    <p>bygget for å lære</p>
   </footer>
 </body>
 </html>
