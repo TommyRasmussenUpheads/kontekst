@@ -2,8 +2,6 @@ services:
   kontekst:
     build: .
     container_name: kontekst
-    ports:
-      - "3016:3016"
     volumes:
       - ./data:/app/data
     restart: unless-stopped
