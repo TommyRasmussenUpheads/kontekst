@@ -1,0 +1,10 @@
+# MGMT-185: hemmeligheter og git-historikk skal aldri inn i imaget.
+# Miljøvariabler kommer fra env_file i docker-compose.yml, ikke fra en .env i imaget.
+.env
+.env.*
+.git
+.gitignore
+node_modules
+# Databasen ligger på et montert volum (./data:/app/data), ikke i imaget
+data
+*.log
