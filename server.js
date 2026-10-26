@@ -3,6 +3,7 @@ const path = require('path');
 const db = require('./db');
 const { withToc, fetchSpec, referenceFrom } = require('./docs');
 const contact = require('./contact');
+const uploads = require('./uploads');
 
 const app = express();
 const PORT = process.env.PORT || 3016;
@@ -11,6 +12,10 @@ const INTERNAL_TOKEN = process.env.INTERNAL_API_TOKEN;
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
+// Opplastede bilder (MGMT-211) ligger på volumet, ikke i imaget
+app.use('/uploads', uploads.publicStatic);
+// Bildeopplasting sendes som base64 i JSON og trenger større grense enn resten
+app.use('/internal/api/uploads', express.json({ limit: '12mb' }));
 app.use(express.json());
 
 // ---------- Offentlige sider ----------
@@ -200,7 +205,18 @@ api.get('/contact', (req, res) => {
   ).all(limit));
 });
 
+// Bilder (MGMT-211)
+api.use('/uploads', uploads.router);
+
 app.use('/internal/api', api);
+// Feil i det interne API-et (f.eks. for stor body) skal komme som JSON til MGMT, ikke som HTML
+app.use('/internal/api', (err, req, res, next) => {
+  if (res.headersSent) return next(err);
+  const status = err.status || err.statusCode || 500;
+  const error = err.type === 'entity.too.large' ? 'forespørselen er for stor (bilder maks 8 MB)' : (status < 500 ? err.message : 'intern feil');
+  if (status >= 500) console.error(err);
+  res.status(status).json({ error });
+});
 
 app.get('/healthz', (req, res) => res.json({ status: 'ok' }));
 
