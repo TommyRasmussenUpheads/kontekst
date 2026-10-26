@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <title>Docs — kontekst</title>
+  <meta name="description" content="Dokumentasjon for API-er og MCP-servere fra prosjektene på kontekst.skydotten.no.">
+  <%- include('partials-head') %>
+</head>
+<body>
+  <%- include('partials-header', { active: 'docs' }) %>
+  <main>
+    <section class="docs-hero">
+      <p class="kicker">Docs</p>
+      <h1>Dokumentasjon</h1>
+      <p class="lede">For deg som skal koble en tjeneste, en agent eller en MCP-klient til prosjektene her.</p>
+    </section>
+    <section>
+      <% if (docs.length === 0) { %>
+        <div class="empty-state"><p class="big">Ingen dokumentasjon enda</p></div>
+      <% } else { %>
+        <ul class="card-grid">
+          <% docs.forEach(function(d) { %>
+            <li>
+              <a href="/docs/<%= d.slug %>">
+                <div class="card-top">
+                  <span class="tag">Docs<%= d.product ? ' · ' + d.product : '' %></span>
+                  <span class="arrow">&rarr;</span>
+                </div>
+                <h3><%= d.title %></h3>
+                <% if (d.summary) { %><p><%= d.summary %></p><% } %>
+                <span class="host"><%= d.version ? 'v' + d.version + ' · ' : '' %>oppdatert <%= String(d.updated_at).slice(0, 10) %></span>
+              </a>
+            </li>
+          <% }); %>
+        </ul>
+      <% } %>
+    </section>
+  </main>
+  <footer>
+    <p>kontekst.skydotten.no</p>
+    <p>bygget for å lære</p>
+  </footer>
+</body>
+</html>

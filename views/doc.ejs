@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <title><%= doc.title %> — Docs — kontekst</title>
+  <% if (doc.summary) { %><meta name="description" content="<%= doc.summary %>"><% } %>
+  <%- include('partials-head') %>
+</head>
+<body class="doc-page">
+  <%- include('partials-header', { active: 'docs' }) %>
+  <main>
+    <div class="doc-layout">
+      <aside class="doc-toc">
+        <a class="toc-back" href="/docs">&larr; Alle docs</a>
+        <p class="toc-title">På denne siden</p>
+        <nav>
+          <% toc.forEach(function(t) { %>
+            <a class="lvl<%= t.level %>" href="#<%= t.id %>"><%= t.text %></a>
+          <% }); %>
+        </nav>
+      </aside>
+
+      <article class="doc">
+        <p class="kicker">Docs<%= doc.product ? ' · ' + doc.product : '' %></p>
+        <h1><%= doc.title %></h1>
+        <% if (doc.summary) { %><p class="doc-lede"><%= doc.summary %></p><% } %>
+        <div class="doc-meta">
+          <% if (doc.version) { %><span>v<%= doc.version %></span><% } %>
+          <span>oppdatert <%= String(doc.updated_at).slice(0, 10) %></span>
+          <% if (doc.app_url) { %><a href="<%= doc.app_url %>" target="_blank" rel="noopener noreferrer">Åpne appen &#8599;</a><% } %>
+          <% if (doc.openapi_url) { %><a href="<%= doc.openapi_url %>" target="_blank" rel="noopener noreferrer">openapi.json &#8599;</a><% } %>
+        </div>
+
+        <div class="post-content doc-content"><%- html %></div>
+
+        <% if (reference) { %>
+          <div class="post-content doc-content">
+            <h2 id="api-referanse">API-referanse</h2>
+            <p>Generert automatisk fra <a href="<%= doc.openapi_url %>"><code>openapi.json</code></a><%= reference.version ? ' (v' + reference.version + ')' : '' %>. Basis-URL: <code><%= reference.server %></code></p>
+          </div>
+          <% reference.groups.forEach(function(g) { %>
+            <section class="ref-group">
+              <h3 id="<%= g.id %>"><%= g.tag %></h3>
+              <% g.ops.forEach(function(op) { %>
+                <details class="ref-op">
+                  <summary>
+                    <span class="method m-<%= op.method.toLowerCase() %>"><%= op.method %></span>
+                    <code class="path"><%= op.path %></code>
+                    <span class="op-summary"><%= op.summary %></span>
+                  </summary>
+                  <div class="ref-body">
+                    <% if (op.params.length) { %>
+                      <p class="ref-label">Parametre</p>
+                      <table class="ref-table">
+                        <% op.params.forEach(function(p) { %>
+                          <tr><td><code><%= p.name %></code><% if (p.required) { %><span class="req">påkrevd</span><% } %></td><td class="ref-type"><%= p.in %> · <%= p.type %></td><td><%= p.description %></td></tr>
+                        <% }); %>
+                      </table>
+                    <% } %>
+                    <% if (op.body.length) { %>
+                      <p class="ref-label">JSON-body</p>
+                      <table class="ref-table">
+                        <% op.body.forEach(function(p) { %>
+                          <tr><td><code><%= p.name %></code><% if (p.required) { %><span class="req">påkrevd</span><% } %></td><td class="ref-type"><%= p.type %></td><td><%= p.description %></td></tr>
+                        <% }); %>
+                      </table>
+                    <% } %>
+                    <% if (!op.params.length && !op.body.length) { %><p class="ref-none">Ingen parametre.</p><% } %>
+                  </div>
+                </details>
+              <% }); %>
+            </section>
+          <% }); %>
+        <% } %>
+      </article>
+    </div>
+  </main>
+  <footer>
+    <p>kontekst.skydotten.no</p>
+    <p>bygget for å lære</p>
+  </footer>
+</body>
+</html>

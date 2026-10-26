@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const db = require('./db');
+const { withToc, fetchSpec, referenceFrom } = require('./docs');
 
 const app = express();
 const PORT = process.env.PORT || 3016;
@@ -20,7 +21,31 @@ app.get('/', (req, res) => {
   const links = db.prepare(
     'SELECT title, url, description, category FROM links WHERE published = 1 ORDER BY sort_order ASC, created_at DESC'
   ).all();
-  res.render('index', { posts, links });
+  const docs = db.prepare(
+    'SELECT slug, title, summary, product, version, updated_at FROM docs WHERE published = 1 ORDER BY sort_order ASC, title ASC'
+  ).all();
+  res.render('index', { posts, links, docs });
+});
+
+// ---------- Docs ----------
+
+app.get('/docs', (req, res) => {
+  const docs = db.prepare(
+    'SELECT slug, title, summary, product, version, updated_at FROM docs WHERE published = 1 ORDER BY sort_order ASC, title ASC'
+  ).all();
+  res.render('docs-index', { docs });
+});
+
+app.get('/docs/:slug', async (req, res) => {
+  const doc = db.prepare('SELECT * FROM docs WHERE slug = ? AND published = 1').get(req.params.slug);
+  if (!doc) return res.status(404).render('404');
+  const { html, toc } = withToc(doc.content);
+  const reference = referenceFrom(await fetchSpec(doc.openapi_url));
+  if (reference) {
+    toc.push({ level: 2, id: 'api-referanse', text: 'API-referanse' });
+    reference.groups.forEach((g) => toc.push({ level: 3, id: g.id, text: g.tag }));
+  }
+  res.render('doc', { doc, html, toc, reference });
 });
 
 app.get('/post/:slug', (req, res) => {
@@ -97,6 +122,41 @@ api.put('/links/:id', (req, res) => {
 
 api.delete('/links/:id', (req, res) => {
   db.prepare('DELETE FROM links WHERE id = ?').run(req.params.id);
+  res.json({ ok: true });
+});
+
+// Docs (samme mønster som posts; content er HTML)
+const DOC_FIELDS = ['slug', 'title', 'summary', 'product', 'version', 'app_url', 'openapi_url', 'content', 'sort_order', 'published'];
+function docValues(b) {
+  return [b.slug, b.title, b.summary || '', b.product || '', b.version || '', b.app_url || '', b.openapi_url || '', b.content,
+    Number(b.sort_order) || 0, b.published ? 1 : 0];
+}
+
+api.get('/docs', (req, res) => {
+  res.json(db.prepare('SELECT * FROM docs ORDER BY sort_order ASC, title ASC').all());
+});
+
+api.post('/docs', (req, res) => {
+  const b = req.body || {};
+  if (!b.slug || !b.title || !b.content) return res.status(400).json({ error: 'slug, title og content er påkrevd' });
+  try {
+    const info = db.prepare(`INSERT INTO docs (${DOC_FIELDS.join(', ')}) VALUES (${DOC_FIELDS.map(() => '?').join(', ')})`).run(...docValues(b));
+    res.status(201).json({ id: info.lastInsertRowid });
+  } catch (e) {
+    res.status(409).json({ error: e.message });
+  }
+});
+
+api.put('/docs/:id', (req, res) => {
+  const b = req.body || {};
+  if (!b.slug || !b.title || !b.content) return res.status(400).json({ error: 'slug, title og content er påkrevd' });
+  db.prepare(`UPDATE docs SET ${DOC_FIELDS.map((f) => `${f} = ?`).join(', ')}, updated_at = datetime('now') WHERE id = ?`)
+    .run(...docValues(b), req.params.id);
+  res.json({ ok: true });
+});
+
+api.delete('/docs/:id', (req, res) => {
+  db.prepare('DELETE FROM docs WHERE id = ?').run(req.params.id);
   res.json({ ok: true });
 });
 
