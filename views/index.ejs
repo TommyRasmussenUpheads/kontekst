@@ -6,14 +6,7 @@
   <%- include('partials-head') %>
 </head>
 <body>
-  <header class="site-header">
-    <a class="wordmark" href="/">kontekst<span>.skydotten.no</span></a>
-    <nav class="site-nav">
-      <a href="#apper">Apper</a>
-      <a href="#blogg">Blogg</a>
-      <a href="#om">Om</a>
-    </nav>
-  </header>
+  <%- include('partials-header') %>
 
   <main>
     <section class="hero">
@@ -93,11 +86,40 @@
       <% } %>
     </section>
 
+    <section id="docs">
+      <div class="section-head">
+        <h2>Docs</h2>
+        <span class="num">03</span>
+      </div>
+      <% if (docs.length === 0) { %>
+        <div class="empty-state">
+          <p class="big">Ingen dokumentasjon enda</p>
+          <p>Her kommer dokumentasjon for API-er og MCP-servere fra prosjektene.</p>
+        </div>
+      <% } else { %>
+        <ul class="card-grid">
+          <% docs.forEach(function(d) { %>
+            <li>
+              <a href="/docs/<%= d.slug %>">
+                <div class="card-top">
+                  <span class="tag">Docs<%= d.product ? ' · ' + d.product : '' %></span>
+                  <span class="arrow">&rarr;</span>
+                </div>
+                <h3><%= d.title %></h3>
+                <% if (d.summary) { %><p><%= d.summary %></p><% } %>
+                <span class="host"><%= d.version ? 'v' + d.version + ' · ' : '' %>oppdatert <%= String(d.updated_at).slice(0, 10) %></span>
+              </a>
+            </li>
+          <% }); %>
+        </ul>
+      <% } %>
+    </section>
+
     <section id="om" class="about">
       <div>
         <div class="section-head">
           <h2>Om siden</h2>
-          <span class="num">03</span>
+          <span class="num">04</span>
         </div>
         <p>Et privat verksted for AI-eksperimenter. Alt som ligger her er bygget for å lære noe — ikke for å selge noe. Kjører på egen server.</p>
       </div>

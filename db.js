@@ -28,6 +28,23 @@ db.exec(`
     published INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  -- Dokumentasjon for apper/API-er (Docs-seksjonen). content er HTML; h2/h3 blir innholdsfortegnelse.
+  CREATE TABLE IF NOT EXISTS docs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    title TEXT NOT NULL,
+    summary TEXT,
+    product TEXT,
+    version TEXT,
+    app_url TEXT,
+    openapi_url TEXT,
+    content TEXT NOT NULL,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    published INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 `);
 
 module.exports = db;
