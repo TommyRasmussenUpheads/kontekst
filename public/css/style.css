@@ -334,3 +334,19 @@ body.doc-page > header, body.doc-page > main, body.doc-page > footer { max-width
 .ref-op summary .path { overflow-wrap: anywhere; }
 .ref-body { overflow-x: auto; }
 .ref-table td { overflow-wrap: anywhere; }
+
+/* App-side (/apper/:slug) */
+.app-page { max-width: 78ch; padding-top: clamp(32px, 5vw, 56px); }
+.app-page h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 7vw, 64px); line-height: 1.04; letter-spacing: -0.02em; margin: 0 0 14px; }
+.app-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 28px; }
+.app-panel { border: 1px solid var(--line); border-radius: 16px; background: var(--card); padding: 24px; display: flex; flex-direction: column; gap: 10px; color: var(--ink); }
+.app-panel h2 { font-size: 20px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+.app-panel p { font-size: 15px; line-height: 1.6; color: var(--ink-soft); margin: 0; text-wrap: pretty; }
+.app-panel .host { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: auto; }
+.panel-label { font-family: var(--mono); font-size: 11px !important; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent-dim) !important; }
+.panel-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.panel-actions .btn { font-size: 14px; padding: 10px 16px; }
+.btn-disabled { border: 1px dashed oklch(0.82 0.012 85); color: var(--ink-faint); cursor: default; }
+.app-panel-link { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.app-panel-link:hover { transform: translateY(-3px); border-color: oklch(0.8 0.05 250); box-shadow: 0 20px 40px -30px oklch(0.5 0.04 265 / 0.5); color: var(--ink); }
+.app-host { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: 28px; }

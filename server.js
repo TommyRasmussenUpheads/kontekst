@@ -19,12 +19,26 @@ app.get('/', (req, res) => {
     'SELECT slug, title, summary, created_at FROM posts WHERE published = 1 ORDER BY created_at DESC'
   ).all();
   const links = db.prepare(
-    'SELECT title, url, description, category FROM links WHERE published = 1 ORDER BY sort_order ASC, created_at DESC'
+    'SELECT title, url, description, category, slug, access FROM links WHERE published = 1 ORDER BY sort_order ASC, created_at DESC'
   ).all();
   const docs = db.prepare(
     'SELECT slug, title, summary, product, version, updated_at FROM docs WHERE published = 1 ORDER BY sort_order ASC, title ASC'
   ).all();
   res.render('index', { posts, links, docs });
+});
+
+// ---------- App-sider ----------
+
+const CONTACT_URL = process.env.CONTACT_URL || ''; // settes når kontaktskjemaet finnes (kontekst-oppgave #201)
+
+app.get('/apper/:slug', (req, res) => {
+  const link = db.prepare('SELECT * FROM links WHERE slug = ? AND published = 1').get(req.params.slug);
+  if (!link) return res.status(404).render('404');
+  const doc = link.docs_slug
+    ? db.prepare('SELECT slug, title, summary, version, updated_at FROM docs WHERE slug = ? AND published = 1').get(link.docs_slug)
+    : null;
+  const contactUrl = CONTACT_URL ? `${CONTACT_URL}${CONTACT_URL.includes('?') ? '&' : '?'}app=${encodeURIComponent(link.slug)}` : '';
+  res.render('app', { link, doc, contactUrl });
 });
 
 // ---------- Docs ----------
@@ -102,22 +116,34 @@ api.get('/links', (req, res) => {
   res.json(db.prepare('SELECT * FROM links ORDER BY sort_order ASC, created_at DESC').all());
 });
 
+// slug/access/docs_slug/details er valgfrie (app-sider). access: 'open' | 'request'
+const linkExtras = (b) => [b.slug || null, b.access === 'request' ? 'request' : 'open', b.docs_slug || null, b.details || null];
+
 api.post('/links', (req, res) => {
   const { title, url, description, category, sort_order, published } = req.body;
   if (!title || !url) return res.status(400).json({ error: 'title og url er påkrevd' });
-  const info = db.prepare(
-    'INSERT INTO links (title, url, description, category, sort_order, published) VALUES (?, ?, ?, ?, ?, ?)'
-  ).run(title, url, description || '', category || 'app', sort_order || 0, published ? 1 : 0);
-  res.status(201).json({ id: info.lastInsertRowid });
+  try {
+    const info = db.prepare(
+      'INSERT INTO links (title, url, description, category, sort_order, published, slug, access, docs_slug, details) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ).run(title, url, description || '', category || 'app', sort_order || 0, published ? 1 : 0, ...linkExtras(req.body));
+    res.status(201).json({ id: info.lastInsertRowid });
+  } catch (e) {
+    res.status(409).json({ error: e.message });
+  }
 });
 
 api.put('/links/:id', (req, res) => {
   const { title, url, description, category, sort_order, published } = req.body;
-  db.prepare(
-    `UPDATE links SET title = ?, url = ?, description = ?, category = ?, sort_order = ?, published = ?
-     WHERE id = ?`
-  ).run(title, url, description || '', category || 'app', sort_order || 0, published ? 1 : 0, req.params.id);
-  res.json({ ok: true });
+  try {
+    db.prepare(
+      `UPDATE links SET title = ?, url = ?, description = ?, category = ?, sort_order = ?, published = ?,
+         slug = ?, access = ?, docs_slug = ?, details = ?
+       WHERE id = ?`
+    ).run(title, url, description || '', category || 'app', sort_order || 0, published ? 1 : 0, ...linkExtras(req.body), req.params.id);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(409).json({ error: e.message });
+  }
 });
 
 api.delete('/links/:id', (req, res) => {

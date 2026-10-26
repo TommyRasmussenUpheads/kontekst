@@ -39,10 +39,14 @@
       <ul class="card-grid">
         <% links.forEach(function(link) { %>
           <li>
+            <% if (link.slug) { %>
+            <a href="/apper/<%= link.slug %>">
+            <% } else { %>
             <a href="<%= link.url %>" target="_blank" rel="noopener noreferrer">
+            <% } %>
               <div class="card-top">
-                <span class="tag">Prosjekt</span>
-                <span class="arrow">&#8599;</span>
+                <span class="tag"><%= link.access === 'request' ? 'Prosjekt · krever tilgang' : 'Prosjekt' %></span>
+                <span class="arrow"><%- link.slug ? '&rarr;' : '&#8599;' %></span>
               </div>
               <h3><%= link.title %></h3>
               <% if (link.description) { %><p><%= link.description %></p><% } %>
