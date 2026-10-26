@@ -246,6 +246,13 @@ main section:first-of-type { padding-top: 24px; }
 .post-content pre { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; overflow-x: auto; font-size: 14px; line-height: 1.6; }
 .post-content pre code { background: none; border: 0; padding: 0; }
 .post-content img { max-width: 100%; border-radius: 12px; }
+.post-content img { height: auto; display: block; }
+.post-content figure { margin: 32px 0; }
+.post-content figure img { margin: 0 auto; border: 1px solid var(--line); }
+.post-content figcaption { font-size: 14px; line-height: 1.5; color: var(--ink-soft); text-align: center; margin-top: 10px; }
+/* Flere bilder side om side, f.eks. mobilskjermbilder: <figure class="bilder"><figure>…</figure>…</figure> */
+.post-content .bilder { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; }
+.post-content .bilder > figure { flex: 1 1 220px; max-width: 300px; margin: 0; }
 
 /* 404 */
 .notfound { padding: clamp(80px, 14vw, 180px) 0; text-align: center; }
