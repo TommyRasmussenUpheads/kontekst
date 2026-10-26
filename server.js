@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const db = require('./db');
 const { withToc, fetchSpec, referenceFrom } = require('./docs');
+const contact = require('./contact');
 
 const app = express();
 const PORT = process.env.PORT || 3016;
@@ -29,7 +30,7 @@ app.get('/', (req, res) => {
 
 // ---------- App-sider ----------
 
-const CONTACT_URL = process.env.CONTACT_URL || ''; // settes når kontaktskjemaet finnes (kontekst-oppgave #201)
+const CONTACT_URL = process.env.CONTACT_URL || '/kontakt'; // kontaktskjemaet (kontekst-201); app-sider legger på ?app=<slug>
 
 app.get('/apper/:slug', (req, res) => {
   const link = db.prepare('SELECT * FROM links WHERE slug = ? AND published = 1').get(req.params.slug);
@@ -40,6 +41,10 @@ app.get('/apper/:slug', (req, res) => {
   const contactUrl = CONTACT_URL ? `${CONTACT_URL}${CONTACT_URL.includes('?') ? '&' : '?'}app=${encodeURIComponent(link.slug)}` : '';
   res.render('app', { link, doc, contactUrl });
 });
+
+// ---------- Kontakt ----------
+
+app.use('/kontakt', contact.router);
 
 // ---------- Docs ----------
 
@@ -186,10 +191,20 @@ api.delete('/docs/:id', (req, res) => {
   res.json({ ok: true });
 });
 
+// Henvendelser fra kontaktskjemaet (lesing for MGMT; nyeste først)
+api.get('/contact', (req, res) => {
+  const limit = Math.min(Number(req.query.limit) || 100, 500);
+  res.json(db.prepare(
+    `SELECT id, name, email, company, topic, message, verified_by, email_status, email_error, mgmt_task_id, mgmt_error, created_at
+       FROM contact_messages ORDER BY id DESC LIMIT ?`
+  ).all(limit));
+});
+
 app.use('/internal/api', api);
 
 app.get('/healthz', (req, res) => res.json({ status: 'ok' }));
 
 app.listen(PORT, () => {
   console.log(`kontekst kjører på port ${PORT}`);
+  contact.startRetryLoop();
 });

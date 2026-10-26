@@ -350,3 +350,25 @@ body.doc-page > header, body.doc-page > main, body.doc-page > footer { max-width
 .app-panel-link { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
 .app-panel-link:hover { transform: translateY(-3px); border-color: oklch(0.8 0.05 250); box-shadow: 0 20px 40px -30px oklch(0.5 0.04 265 / 0.5); color: var(--ink); }
 .app-host { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: 28px; }
+
+/* Kontaktskjema (/kontakt) */
+.contact-page { max-width: 72ch; padding-top: clamp(32px, 5vw, 56px); }
+.contact-page h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 7vw, 64px); line-height: 1.04; letter-spacing: -0.02em; margin: 0 0 14px; }
+.contact-page .callout { margin-top: 8px; }
+.contact-form { display: flex; flex-direction: column; gap: 18px; margin-top: 28px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); padding: clamp(20px, 3vw, 28px); }
+.field-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field > span { font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); }
+.field > span em { font-style: normal; text-transform: none; letter-spacing: 0; color: var(--ink-faint); margin-left: 6px; }
+.field input, .field select, .field textarea {
+  font: inherit; font-size: 15.5px; color: var(--ink);
+  background: var(--paper); border: 1px solid oklch(0.87 0.012 85); border-radius: 10px;
+  padding: 11px 13px; width: 100%;
+}
+.field textarea { resize: vertical; min-height: 150px; line-height: 1.55; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--accent-soft); outline-offset: 1px; border-color: var(--accent-dim); }
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.form-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 20px; }
+.form-actions .btn { border: 0; cursor: pointer; font-family: inherit; }
+.form-note { font-size: 13px; color: var(--ink-faint); margin: 0; max-width: 46ch; }
+.contact-thanks .panel-actions { margin-top: 24px; }

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <title>Kontakt — kontekst</title>
+  <meta name="description" content="Ta kontakt eller be om tilgang til en av appene på kontekst.skydotten.no.">
+  <%- include('partials-head') %>
+  <% if (turnstileSiteKey) { %>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <% } %>
+</head>
+<body>
+  <%- include('partials-header', { active: 'kontakt' }) %>
+  <main>
+    <article class="contact-page">
+      <p class="kicker">Kontakt</p>
+      <h1>Ta kontakt</h1>
+      <p class="doc-lede">Vil du ha tilgang til en av appene, teste en integrasjon eller en AI-agent mot dem, eller bare si hei? Skriv noen linjer, så svarer jeg på e-post.</p>
+
+      <% if (errors.length) { %>
+        <div class="callout warn" role="alert">
+          <% errors.forEach(function (e) { %><p><%= e %></p><% }); %>
+        </div>
+      <% } %>
+
+      <form class="contact-form" method="post" action="/kontakt" novalidate>
+        <input type="hidden" name="form_token" value="<%= formToken %>">
+
+        <div class="field-row">
+          <label class="field">
+            <span>Navn</span>
+            <input type="text" name="name" value="<%= values.name || '' %>" maxlength="<%= limits.name %>" autocomplete="name" required>
+          </label>
+          <label class="field">
+            <span>E-post</span>
+            <input type="email" name="email" value="<%= values.email || '' %>" maxlength="<%= limits.email %>" autocomplete="email" required>
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span>Firma <em>valgfritt</em></span>
+            <input type="text" name="company" value="<%= values.company || '' %>" maxlength="<%= limits.company %>" autocomplete="organization">
+          </label>
+          <label class="field">
+            <span>Hva gjelder det?</span>
+            <select name="topic" required>
+              <option value="" <%= values.topic ? '' : 'selected' %> disabled>Velg …</option>
+              <% topics.forEach(function (t) { %>
+                <option value="<%= t.value %>" <%= values.topic === t.value ? 'selected' : '' %>><%= t.label %></option>
+              <% }); %>
+            </select>
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Melding</span>
+          <textarea name="message" rows="7" maxlength="<%= limits.message %>" required placeholder="Hva trenger du tilgang til, og hva vil du bruke det til?"><%= values.message || '' %></textarea>
+        </label>
+
+        <%# Honeypot: skjult for mennesker og skjermlesere, bots fyller det gjerne ut %>
+        <div class="hp" aria-hidden="true">
+          <label>Nettside <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
+
+        <% if (turnstileSiteKey) { %>
+          <div class="cf-turnstile" data-sitekey="<%= turnstileSiteKey %>" data-action="kontakt" data-theme="light" data-language="no"></div>
+        <% } %>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Send melding</button>
+          <p class="form-note">Meldingen lagres og sendes bare til meg. Den brukes ikke til noe annet enn å svare deg.</p>
+        </div>
+      </form>
+    </article>
+  </main>
+  <footer>
+    <p>kontekst.skydotten.no</p>
+    <p>bygget for å lære</p>
+  </footer>
+</body>
+</html>
