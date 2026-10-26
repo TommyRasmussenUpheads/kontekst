@@ -56,4 +56,25 @@ addCol('docs_slug', 'TEXT');       // lenke til /docs/:slug
 addCol('details', 'TEXT');         // utfyllende tekst (HTML) på app-siden
 db.exec('CREATE UNIQUE INDEX IF NOT EXISTS links_slug_idx ON links(slug) WHERE slug IS NOT NULL');
 
+// Kontaktskjema (kontekst-201). topic = app-slug eller 'generelt'.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS contact_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    company TEXT,
+    topic TEXT NOT NULL,
+    message TEXT NOT NULL,
+    ip TEXT,
+    user_agent TEXT,
+    verified_by TEXT,
+    email_status TEXT,
+    email_error TEXT,
+    mgmt_task_id INTEGER,
+    mgmt_attempts INTEGER NOT NULL DEFAULT 0,
+    mgmt_error TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+`);
+
 module.exports = db;
