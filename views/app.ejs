@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <title><%= link.title %> — kontekst</title>
+  <% if (link.description) { %><meta name="description" content="<%= link.description %>"><% } %>
+  <%- include('partials-head') %>
+</head>
+<body>
+  <%- include('partials-header') %>
+  <main>
+    <article class="app-page">
+      <a class="toc-back" href="/#apper">&larr; Alle apper</a>
+      <p class="kicker">App<%= link.access === 'request' ? ' · krever tilgang' : '' %></p>
+      <h1><%= link.title %></h1>
+      <% if (link.description) { %><p class="doc-lede"><%= link.description %></p><% } %>
+      <% if (link.details) { %><div class="post-content doc-content"><%- link.details %></div><% } %>
+
+      <div class="app-panels">
+        <% if (link.access === 'request') { %>
+          <section class="app-panel">
+            <p class="panel-label">Tilgang</p>
+            <h2>Denne appen krever tilgang</h2>
+            <p>Appen og API-et er ikke åpne for alle. Ønsker du tilgang til <%= link.title %>, for eksempel for å teste en integrasjon eller en AI-agent mot den, ta kontakt via kontaktskjemaet, så får du innlogging eller en API-nøkkel.</p>
+            <div class="panel-actions">
+              <% if (contactUrl) { %>
+                <a class="btn btn-primary" href="<%= contactUrl %>">Be om tilgang</a>
+              <% } else { %>
+                <span class="btn btn-disabled" aria-disabled="true">Kontaktskjema kommer snart</span>
+                <a class="btn btn-ghost" href="https://www.linkedin.com/in/tommyrasmussen/" target="_blank" rel="noopener noreferrer">Kontakt på LinkedIn &#8599;</a>
+              <% } %>
+              <a class="btn btn-ghost" href="<%= link.url %>" target="_blank" rel="noopener noreferrer">Har tilgang – åpne appen &#8599;</a>
+            </div>
+          </section>
+        <% } else { %>
+          <section class="app-panel">
+            <p class="panel-label">Åpen app</p>
+            <h2>Prøv appen</h2>
+            <div class="panel-actions">
+              <a class="btn btn-primary" href="<%= link.url %>" target="_blank" rel="noopener noreferrer">Åpne <%= link.title %> &#8599;</a>
+            </div>
+          </section>
+        <% } %>
+
+        <% if (doc) { %>
+          <a class="app-panel app-panel-link" href="/docs/<%= doc.slug %>">
+            <p class="panel-label">Dokumentasjon</p>
+            <h2><%= doc.title %> <span class="arrow">&rarr;</span></h2>
+            <% if (doc.summary) { %><p><%= doc.summary %></p><% } %>
+            <span class="host"><%= doc.version ? 'v' + doc.version + ' · ' : '' %>oppdatert <%= String(doc.updated_at).slice(0, 10) %></span>
+          </a>
+        <% } %>
+      </div>
+
+      <p class="app-host"><%= link.url.replace(/^https?:\/\//, '').replace(/\/$/, '') %></p>
+    </article>
+  </main>
+  <footer>
+    <p>kontekst.skydotten.no</p>
+    <p>bygget for å lære</p>
+  </footer>
+</body>
+</html>

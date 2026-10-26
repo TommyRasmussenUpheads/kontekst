@@ -47,4 +47,13 @@ db.exec(`
   );
 `);
 
+// Migrering: app-sider (/apper/:slug). SQLite mangler ADD COLUMN IF NOT EXISTS, så vi sjekker først.
+const linkCols = db.prepare('PRAGMA table_info(links)').all().map((c) => c.name);
+const addCol = (name, def) => { if (!linkCols.includes(name)) db.exec(`ALTER TABLE links ADD COLUMN ${name} ${def}`); };
+addCol('slug', 'TEXT');            // satt = kortet går til egen app-side i stedet for rett til url
+addCol('access', "TEXT DEFAULT 'open'"); // 'open' eller 'request' (krever tilgang)
+addCol('docs_slug', 'TEXT');       // lenke til /docs/:slug
+addCol('details', 'TEXT');         // utfyllende tekst (HTML) på app-siden
+db.exec('CREATE UNIQUE INDEX IF NOT EXISTS links_slug_idx ON links(slug) WHERE slug IS NOT NULL');
+
 module.exports = db;
