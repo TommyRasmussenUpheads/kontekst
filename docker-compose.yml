@@ -8,8 +8,8 @@ services:
     env_file: .env
     networks:
       default: {}
-      npm:
-        ipv4_address: 172.18.0.9
+      # Ingen fast IP: NPM forwarder til containernavnet (MGMT-256 – 172.18.0.9 ble tatt av en annen container ved omstart)
+      npm: {}
       mgmtnet: {}
 
 networks:
